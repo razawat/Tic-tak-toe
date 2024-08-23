@@ -1,14 +1,15 @@
 import Player from "./player";
 import Gameboard from "./gameboard";
 import { useState } from "react";
-import { playerSymbol,gameTrack } from "../data";
-
+import { playerSymbol, gameTrack, playerName as pName } from "../data";
 
 export default function Playboard() {
   const [matchStatus, updateMatchStatus] = useState({
     activeSymbol: playerSymbol.first,
     gameTrack: gameTrack,
   });
+
+  const [playerName, updatePlayerName] = useState(pName);
 
   function handlePlayerTurn(rowIndex, colIndex) {
     //console.log("turn: ", row, col);
@@ -19,7 +20,7 @@ export default function Playboard() {
           : playerSymbol.first;
       const updateTrack = prevValue.gameTrack.map((row, i) =>
         row.map((col, j) =>
-          i === rowIndex && j === colIndex ? updateSymbol : col
+          i === rowIndex && j === colIndex ? prevValue.activeSymbol : col
         )
       );
       return {
@@ -29,10 +30,34 @@ export default function Playboard() {
       };
     });
   }
+
+  function handlePlayerName(player, symbol) {
+    updatePlayerName((prevValue) => {
+      console.log(symbol, player);
+      return symbol === playerSymbol.first
+        ? { ...prevValue, first: player }
+        : { ...prevValue, second: player };
+    });
+  }
+
   return (
     <div id="playboard">
       <div>
-        <Player name="first" symbol={matchStatus.activeSymbol} />
+        <ul id="players">
+          <Player
+            name={playerName.first}
+            symbol={playerSymbol.first}
+            activeSymbol={matchStatus.activeSymbol}
+            handleName={handlePlayerName}
+          />
+          <Player
+            name={playerName.second}
+            symbol={playerSymbol.second}
+            activeSymbol={matchStatus.activeSymbol}
+            handleName={handlePlayerName}
+          />
+        </ul>
+        {/* <Player name={playerName} symbol={matchStatus.activeSymbol} /> */}
         <Gameboard game={matchStatus.gameTrack} playerTurn={handlePlayerTurn} />
       </div>
     </div>

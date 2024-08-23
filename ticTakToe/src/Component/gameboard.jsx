@@ -1,3 +1,5 @@
+import PropTypes from "prop-types";
+
 export default function Gameboard({ game, playerTurn }) {
   console.log(game);
   return (
@@ -8,7 +10,12 @@ export default function Gameboard({ game, playerTurn }) {
             <ul>
               {row.map((col, j) => (
                 <li key={j}>
-                  <button onClick={() => playerTurn(i, j)} disabled={game[i][j] != null}>{game[i][j]}</button>
+                  <button
+                    onClick={() => playerTurn(i, j)}
+                    disabled={game[i][j] != null}
+                  >
+                    {game[i][j]}
+                  </button>
                 </li>
               ))}
             </ul>
@@ -18,3 +25,8 @@ export default function Gameboard({ game, playerTurn }) {
     </ul>
   );
 }
+
+Gameboard.propTypes = {
+  game: PropTypes.array.isRequired,
+  playerTurn: PropTypes.func.isRequired,
+};
