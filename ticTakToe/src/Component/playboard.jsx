@@ -1,7 +1,12 @@
 import Player from "./player";
 import Gameboard from "./gameboard";
 import { useState } from "react";
-import { playerSymbol, gameTrack, playerName as pName } from "../data";
+import {
+  playerSymbol,
+  gameTrack,
+  playerName as pName,
+  winningCombination,
+} from "../data";
 
 export default function Playboard() {
   const [matchStatus, updateMatchStatus] = useState({
@@ -23,6 +28,15 @@ export default function Playboard() {
           i === rowIndex && j === colIndex ? prevValue.activeSymbol : col
         )
       );
+      const winner = handleMatchWinner(updateTrack);
+      if (winner) {
+        console.log(
+          "Winner: ",
+          matchStatus.activeSymbol,
+          matchStatus.gameTrack,
+          winner
+        );
+      }
       return {
         ...prevValue,
         activeSymbol: updateSymbol,
@@ -38,6 +52,39 @@ export default function Playboard() {
         ? { ...prevValue, first: player }
         : { ...prevValue, second: player };
     });
+  }
+
+  function handleMatchWinner(updatedGameTrack) {
+    const gameTrack = updatedGameTrack;
+    for (let i = 0; i < winningCombination.length; i++) {
+      const firstRow = winningCombination[i][0].row;
+      const firstCol = winningCombination[i][0].column;
+
+      const secondRow = winningCombination[i][1].row;
+      const secondCol = winningCombination[i][1].column;
+
+      const thirdRow = winningCombination[i][2].row;
+      const thirdCol = winningCombination[i][2].column;
+
+      if (
+        gameTrack[firstRow][firstCol] !== null &&
+        gameTrack[secondRow][secondCol] !== null &&
+        gameTrack[thirdRow][thirdCol] !== null &&
+        gameTrack[firstRow][firstCol] === gameTrack[secondRow][secondCol] &&
+        gameTrack[secondRow][secondCol] === gameTrack[thirdRow][thirdCol]
+      ) {
+        console.log(
+          gameTrack[firstRow][firstCol],
+          gameTrack[secondRow][secondCol],
+          gameTrack[thirdRow][thirdCol]
+        );
+        return matchStatus.activeSymbol === playerSymbol.first
+          ? playerName.first
+          : playerName.second;
+        //return true;
+      }
+    }
+    return false;
   }
 
   return (

@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useState, useRef } from "react";
 
 export default function Player({ name, symbol, activeSymbol,handleName }) {
-    console.log(name,symbol);
+   // console.log(name,symbol);
   const [editMode, setEditMode] = useState(false);
   const containPlayerName = useRef();
   function handlePlayerName() {

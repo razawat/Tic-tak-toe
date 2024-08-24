@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 export default function Gameboard({ game, playerTurn }) {
-  console.log(game);
+  //console.log(game);
   return (
     <ul id="game-board">
       {game.map((row, i) => {
