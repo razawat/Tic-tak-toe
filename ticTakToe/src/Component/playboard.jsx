@@ -1,5 +1,6 @@
 import Player from "./player";
 import Gameboard from "./gameboard";
+import GameLog from "./gamelog";
 import { useState, useEffect } from "react";
 import {
   playerSymbol,
@@ -15,6 +16,7 @@ export default function Playboard() {
     activeSymbol: playerSymbol.first,
     gameTrack: gT.map((row) => [...row]),
     playCount: 0,
+    logs:[],
   });
   const [result, showResult] = useState(null);
   const [playerName, updatePlayerName] = useState(pName);
@@ -43,11 +45,14 @@ export default function Playboard() {
           i === rowIndex && j === colIndex ? prevValue.activeSymbol : col
         )
       );
+      const myLog = {playerSymbol:prevValue.activeSymbol,coordinate:{x:rowIndex,y:colIndex}};
+     // console.log(myLog);
       return {
         ...prevValue,
         activeSymbol: updateSymbol,
         gameTrack: updateTrack,
         playCount: prevValue.playCount + 1,
+        logs:[myLog,...prevValue.logs],
       };
     });
   }
@@ -103,11 +108,9 @@ export default function Playboard() {
   }
 
   function handleMatchDraw() {
-   // console.log(matchStatus.playCount);
+    // console.log(matchStatus.playCount);
     const result =
-      matchStatus.playCount === gT.length * gT[0].length
-        ? true
-        : false;
+      matchStatus.playCount === gT.length * gT[0].length ? true : false;
     if (result) {
       showResult("It's Draw!!!");
     }
@@ -120,32 +123,39 @@ export default function Playboard() {
         gameTrack: gT.map((row) => [...row]),
         // gameTrack: gT,
         playCount: 0,
+        logs:[]
       };
     });
     showResult(null);
   }
 
   return (
-    <div id="playboard">
-      <div>
-        <ul id="players">
-          <Player
-            name={playerName.first}
-            symbol={playerSymbol.first}
-            activeSymbol={matchStatus.activeSymbol}
-            handleName={handlePlayerName}
+    <>
+      <div id="playboard">
+        <div>
+          <ul id="players">
+            <Player
+              name={playerName.first}
+              symbol={playerSymbol.first}
+              activeSymbol={matchStatus.activeSymbol}
+              handleName={handlePlayerName}
+            />
+            <Player
+              name={playerName.second}
+              symbol={playerSymbol.second}
+              activeSymbol={matchStatus.activeSymbol}
+              handleName={handlePlayerName}
+            />
+          </ul>
+          {/* <Player name={playerName} symbol={matchStatus.activeSymbol} /> */}
+          <Gameboard
+            game={matchStatus.gameTrack}
+            playerTurn={handlePlayerTurn}
           />
-          <Player
-            name={playerName.second}
-            symbol={playerSymbol.second}
-            activeSymbol={matchStatus.activeSymbol}
-            handleName={handlePlayerName}
-          />
-        </ul>
-        {/* <Player name={playerName} symbol={matchStatus.activeSymbol} /> */}
-        <Gameboard game={matchStatus.gameTrack} playerTurn={handlePlayerTurn} />
+        </div>
+        {result && <MatchResult message={result} reMatch={handleReMatch} />}
       </div>
-      {result && <MatchResult message={result} reMatch={handleReMatch} />}
-    </div>
+      <GameLog logs={matchStatus.logs}/>
+    </>
   );
 }
