@@ -1,20 +1,35 @@
 import Player from "./player";
 import Gameboard from "./gameboard";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import {
   playerSymbol,
   gameTrack,
   playerName as pName,
   winningCombination,
 } from "../data";
+import MatchResult from "./matchResult";
 
 export default function Playboard() {
   const [matchStatus, updateMatchStatus] = useState({
     activeSymbol: playerSymbol.first,
     gameTrack: gameTrack,
+    playCount: 0,
   });
-
+  const [result, showResult] = useState(null);
   const [playerName, updatePlayerName] = useState(pName);
+
+  useEffect(() => {
+    const winner = handleMatchWinner();
+
+    if (winner) {
+      showResult(`${winner} is winner!!!`);
+    } else {
+      handleMatchDraw();
+    }
+  },[matchStatus.playCount]);
+
+
+  //console.log(handleMatchDraw());
 
   function handlePlayerTurn(rowIndex, colIndex) {
     //console.log("turn: ", row, col);
@@ -28,19 +43,11 @@ export default function Playboard() {
           i === rowIndex && j === colIndex ? prevValue.activeSymbol : col
         )
       );
-      const winner = handleMatchWinner(updateTrack);
-      if (winner) {
-        console.log(
-          "Winner: ",
-          matchStatus.activeSymbol,
-          matchStatus.gameTrack,
-          winner
-        );
-      }
       return {
         ...prevValue,
         activeSymbol: updateSymbol,
         gameTrack: updateTrack,
+        playCount: prevValue.playCount + 1,
       };
     });
   }
@@ -54,8 +61,8 @@ export default function Playboard() {
     });
   }
 
-  function handleMatchWinner(updatedGameTrack) {
-    const gameTrack = updatedGameTrack;
+  function handleMatchWinner() {
+    const gameTrack = matchStatus.gameTrack;
     for (let i = 0; i < winningCombination.length; i++) {
       const firstRow = winningCombination[i][0].row;
       const firstCol = winningCombination[i][0].column;
@@ -78,13 +85,32 @@ export default function Playboard() {
           gameTrack[secondRow][secondCol],
           gameTrack[thirdRow][thirdCol]
         );
-        return matchStatus.activeSymbol === playerSymbol.first
+        console.log(
+          "Winner: ",
+          matchStatus.activeSymbol,
+          matchStatus.gameTrack,
+          matchStatus.activeSymbol === playerSymbol.first
+            ? playerName.first
+            : playerName.second
+        );
+        return matchStatus.activeSymbol !== playerSymbol.first
           ? playerName.first
           : playerName.second;
         //return true;
       }
     }
     return false;
+  }
+
+  function handleMatchDraw() {
+  console.log(matchStatus.playCount);
+    const result =
+      matchStatus.playCount === gameTrack.length * gameTrack[0].length
+        ? true
+        : false;
+    if (result) {
+      showResult("It's Draw!!!");
+    }
   }
 
   return (
@@ -107,6 +133,7 @@ export default function Playboard() {
         {/* <Player name={playerName} symbol={matchStatus.activeSymbol} /> */}
         <Gameboard game={matchStatus.gameTrack} playerTurn={handlePlayerTurn} />
       </div>
+      {result && <MatchResult message={result} />}
     </div>
   );
 }
