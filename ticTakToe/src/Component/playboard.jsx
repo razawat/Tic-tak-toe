@@ -1,18 +1,19 @@
 import Player from "./player";
 import Gameboard from "./gameboard";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   playerSymbol,
-  gameTrack,
+  gameTrack as gT,
   playerName as pName,
   winningCombination,
 } from "../data";
 import MatchResult from "./matchResult";
 
 export default function Playboard() {
+  //  console.log('In Playboard',gT);
   const [matchStatus, updateMatchStatus] = useState({
     activeSymbol: playerSymbol.first,
-    gameTrack: gameTrack,
+    gameTrack: gT.map((row) => [...row]),
     playCount: 0,
   });
   const [result, showResult] = useState(null);
@@ -26,8 +27,7 @@ export default function Playboard() {
     } else {
       handleMatchDraw();
     }
-  },[matchStatus.playCount]);
-
+  }, [matchStatus.playCount]);
 
   //console.log(handleMatchDraw());
 
@@ -85,14 +85,14 @@ export default function Playboard() {
           gameTrack[secondRow][secondCol],
           gameTrack[thirdRow][thirdCol]
         );
-        console.log(
-          "Winner: ",
-          matchStatus.activeSymbol,
-          matchStatus.gameTrack,
-          matchStatus.activeSymbol === playerSymbol.first
-            ? playerName.first
-            : playerName.second
-        );
+        // console.log(
+        //   "Winner: ",
+        //   matchStatus.activeSymbol,
+        //   matchStatus.gameTrack,
+        //   matchStatus.activeSymbol === playerSymbol.first
+        //     ? playerName.first
+        //     : playerName.second
+        // );
         return matchStatus.activeSymbol !== playerSymbol.first
           ? playerName.first
           : playerName.second;
@@ -103,14 +103,26 @@ export default function Playboard() {
   }
 
   function handleMatchDraw() {
-  console.log(matchStatus.playCount);
+   // console.log(matchStatus.playCount);
     const result =
-      matchStatus.playCount === gameTrack.length * gameTrack[0].length
+      matchStatus.playCount === gT.length * gT[0].length
         ? true
         : false;
     if (result) {
       showResult("It's Draw!!!");
     }
+  }
+
+  function handleReMatch() {
+    updateMatchStatus(() => {
+      return {
+        activeSymbol: playerSymbol.first,
+        gameTrack: gT.map((row) => [...row]),
+        // gameTrack: gT,
+        playCount: 0,
+      };
+    });
+    showResult(null);
   }
 
   return (
@@ -133,7 +145,7 @@ export default function Playboard() {
         {/* <Player name={playerName} symbol={matchStatus.activeSymbol} /> */}
         <Gameboard game={matchStatus.gameTrack} playerTurn={handlePlayerTurn} />
       </div>
-      {result && <MatchResult message={result} />}
+      {result && <MatchResult message={result} reMatch={handleReMatch} />}
     </div>
   );
 }
