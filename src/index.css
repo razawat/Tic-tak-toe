@@ -11,7 +11,7 @@ body {
       rgba(241, 210, 70, 0.98),
       rgba(250, 176, 103, 0.87)
     ),
-    url("bg-pattern-dark.png");
+    url("/bg-pattern-dark.png");
   background-repeat: repeat;
   background-size: 100% 100%, 30% 30%, 100% 100%;
   min-height: 110rem;
@@ -51,6 +51,7 @@ body {
   padding: 0;
   margin: 1rem 0;
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
   gap: 2rem;
@@ -59,7 +60,7 @@ body {
 #players li {
   display: flex;
   align-items: center;
-  width: 50%;
+  min-width: 45%;
   border: 2px solid transparent;
 }
 
@@ -263,5 +264,21 @@ ul {
   100% {
     opacity: 1;
     transform: translateX(0);
+  }
+}
+
+@media (max-width: 600px) {
+  #game-board button {
+    width: 6rem;
+    height: 6rem;
+    font-size: 4rem;
+  }
+}
+
+@media (max-width: 435px) {
+  #game-board button {
+    width: 4rem;
+    height: 4rem;
+    font-size: 2.5rem;
   }
 }
